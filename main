@@ -1,0 +1,188 @@
+"""batalla naval python"""
+
+import random #libreria para numero aleatorio
+import copy #libreria para copiar una matriz y moificar la copia
+
+from os import system, name #para limpiar panalla
+from time import sleep #para pausar por segundos el sistema
+
+
+def clear(): #funcion para limpiar pantalla
+  if name == 'nt': 
+        _ = system('cls') 
+  else: 
+        _ = system('clear') 
+
+def menu():
+  print("""=============BATALLA NAVAL================
+  1.- Iniciar
+  2.- Salir""")
+
+def imprimir_matrizes(x,y):
+  output = ""
+  contador = 0
+  for fila in x:
+    for columna in fila:
+        output += (str(*columna)+" ")
+        contador +=1
+        if contador==5:
+          output += "\n"
+          contador = 0
+
+  copia = copy.deepcopy(y)
+  output2 = ""
+  contador2 = 0
+  for fila in copia:
+    for columna in fila:
+      if columna == "1":
+        output2 += ("O" + " ")
+        contador2 +=1
+      else:
+        output2 += (str(*columna)+" ")
+        contador2 +=1
+      if contador2==5:
+        output2 += "\n"
+        contador2 = 0
+        
+  print(output)
+  print(output2)
+
+def posicionar_barcos(x,y):
+  while True:
+    try:
+      contador_cpu = 0
+      contador_jugador = 0
+      imprimir_matrizes(matriz_jugador,matriz_cpu)
+      while contador_jugador<5:
+        print("INSERTE SU BARCO")
+        posicionx = int(input("ingrese coordenada x: "))
+        posiciony = int(input("ingrese coordenada y: "))
+        if x[posiciony][posicionx] == "1":
+          print("Ya tienes un barco aquí")
+          sleep(1)
+          continue
+        else:
+          x[posiciony][posicionx] = "1"
+          print(f"barco insertado en {posicionx},{posiciony}")
+          contador_jugador += 1
+          sleep(1)
+
+      while contador_cpu<5:
+        posicionx2 = random.randint(0,4)
+        posiciony2 = random.randint(0,4)
+        if y[posiciony2][posicionx2] == "1":
+          continue
+        else:
+          y[posiciony2][posicionx2] = "1"
+          contador_cpu += 1
+      print("La cpu insertó sus barcos")
+      sleep(1)
+      clear()
+      break
+    except ValueError:
+      clear()
+      continue
+    except IndexError:
+      print("Fuera de rango")
+      sleep(1)
+      clear()
+      continue
+
+def atacar_a_cpu(x):
+  barcos_cpu = 5
+  while True:
+    count = str(matriz_jugador).count("X")
+    if count == 5:
+      print("=====HAS PERDIDO=====")
+      sleep(2)
+      clear()
+      break
+    try:
+      imprimir_matrizes(matriz_jugador,matriz_cpu)
+      print("Seleccione la coordenada del ataque")
+      posicionx = int(input("ingrese coordenada x: "))
+      posiciony = int(input("ingrese coordenada y: "))
+      if x[posiciony][posicionx]=="1":
+        x[posiciony][posicionx]="X"
+        print("Le diste")
+        barcos_cpu -= 1
+        if barcos_cpu == 0:
+          print("==========GANASTE===========")
+          print("======FIN DEL JUEGO=========")
+          sleep(3)
+          clear()
+          break
+        sleep(1)
+      elif x[posiciony][posicionx]=="#":
+        print("YA ATACASTE AQUÍ")
+        sleep(1)
+        clear()
+        continue
+      else:
+        x[posiciony][posicionx]="#"
+        print("FALLASTE")
+        sleep(1)
+    except IndexError:
+      print("Fuera de rango")
+      sleep(1)
+      clear()
+      continue
+    atacar_a_jugador(matriz_jugador)
+
+def atacar_a_jugador(x):
+  while True:
+    posicionx = random.randint(0,4)
+    posiciony = random.randint(0,4)
+    if x[posiciony][posicionx]=="1":
+      x[posiciony][posicionx]="X"
+      print("La cpu te dió")
+      sleep(1)
+      clear()
+      break
+    elif x[posiciony][posicionx]=="#":
+      continue
+    else:
+      x[posiciony][posicionx]="#"
+      print("La cpu falló")
+      sleep(1)
+      clear()
+      break
+
+
+matriz_jugador = [
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  ]
+
+matriz_cpu = [
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  [["O"],["O"],["O"],["O"],["O"]],
+  ]
+
+
+# MAIN
+while True:
+  try:
+    menu()
+    opc = int(input("seleccione una opcion: "))
+    if opc == 1:
+      posicionar_barcos(matriz_jugador,matriz_cpu)
+      atacar_a_cpu(matriz_cpu)
+    elif opc == 2:
+      print("Saliste")
+      break
+    else:
+      print("Numero invalido")
+      clear()
+      continue
+
+  except ValueError:
+    print("Pon un numero")
+    clear()
+    continue
